@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LEXOCR — Legal Discovery, Reimagined · SiloMind</title>
+  <style>
+    :root {
+      --navy:   #0B1120;
+      --navy2:  #111827;
+      --navy3:  #1E2D45;
+      --gold:   #C9A84C;
+      --gold2:  #E8C96A;
+      --gold3:  #F5DFA0;
+      --white:  #F8F9FC;
+      --gray:   #8A95A8;
+      --border: rgba(201,168,76,0.18);
+      --green:  #4ade80;
+      --green-bg: rgba(34,197,94,0.12);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--navy); color: var(--white); line-height: 1.6; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 5vw; height: 70px;
+      background: rgba(11,17,32,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+    .nav-brand-name { font-size: 1.1rem; font-weight: 700; color: var(--white); }
+    .nav-brand-name em { color: var(--gold); font-style: normal; }
+    .nav-back {
+      display: flex; align-items: center; gap: 8px;
+      color: var(--gray); text-decoration: none; font-size: 0.875rem;
+      transition: color 0.2s;
+    }
+    .nav-back:hover { color: var(--gold); }
+    .nav-cta {
+      padding: 8px 22px; border-radius: 6px;
+      background: var(--gold); color: var(--navy);
+      font-weight: 700; font-size: 0.875rem; text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .nav-cta:hover { background: var(--gold2); transform: translateY(-1px); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 110px 5vw 80px;
+      position: relative; overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 90% 55% at 50% -5%, rgba(201,168,76,0.1) 0%, transparent 65%),
+        radial-gradient(ellipse 50% 50% at 90% 90%, rgba(30,45,69,0.5) 0%, transparent 70%);
+    }
+    .hero-grid {
+      position: absolute; inset: 0; z-index: 0;
+      background-image:
+        linear-gradient(rgba(201,168,76,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(201,168,76,0.035) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    .hero > * { position: relative; z-index: 1; }
+
+    .hero-product-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 18px; border-radius: 100px;
+      border: 1px solid var(--border);
+      background: rgba(201,168,76,0.07);
+      font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 32px;
+    }
+    .live-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 6px var(--green);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+
+    .hero h1 {
+      font-size: clamp(3rem, 7vw, 6rem);
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+    .hero h1 .lex { color: var(--white); }
+    .hero h1 .ocr { color: var(--gold); }
+
+    .hero-sub-title {
+      font-size: clamp(0.85rem, 1.5vw, 1rem);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 28px;
+      font-weight: 600;
+    }
+
+    .hero-tagline {
+      font-size: clamp(1.1rem, 2vw, 1.45rem);
+      color: var(--white);
+      max-width: 600px; margin: 0 auto 12px;
+      font-weight: 300; line-height: 1.5;
+    }
+    .hero-tagline strong { font-weight: 800; }
+
+    .hero-sub-tag {
+      font-size: 0.9rem; color: var(--gray);
+      font-style: italic; margin-bottom: 52px;
+    }
+
+    /* Stats bar */
+    .stats-bar {
+      display: flex; gap: 0; flex-wrap: wrap; justify-content: center;
+      border: 1px solid var(--border); border-radius: 14px;
+      overflow: hidden; margin-bottom: 52px;
+      background: rgba(30,45,69,0.3);
+      backdrop-filter: blur(8px);
+    }
+    .stat-item {
+      padding: 22px 40px; text-align: center;
+      border-right: 1px solid var(--border);
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-num { font-size: 2.4rem; font-weight: 900; color: var(--gold); line-height: 1; }
+    .stat-label { font-size: 0.75rem; color: var(--gray); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 4px; }
+
+    .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+    .btn-primary {
+      padding: 14px 36px; background: var(--gold); color: var(--navy);
+      font-weight: 800; border-radius: 8px; text-decoration: none; font-size: 0.95rem;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      box-shadow: 0 4px 24px rgba(201,168,76,0.3);
+    }
+    .btn-primary:hover { background: var(--gold2); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(201,168,76,0.4); }
+    .btn-outline {
+      padding: 14px 36px; border: 1px solid var(--border); color: var(--white);
+      border-radius: 8px; text-decoration: none; font-size: 0.95rem;
+      transition: border-color 0.2s, background 0.2s;
+      background: rgba(255,255,255,0.03);
+    }
+    .btn-outline:hover { border-color: var(--gold); background: rgba(201,168,76,0.07); }
+
+    /* ── SHARED SECTION ── */
+    section { padding: 96px 5vw; }
+    .section-eyebrow { font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; }
+    .section-title { font-size: clamp(1.7rem, 3vw, 2.4rem); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 14px; }
+    .section-sub { color: var(--gray); max-width: 560px; line-height: 1.7; margin-bottom: 56px; font-size: 0.95rem; }
+
+    /* ── CORE FEATURES ── */
+    #features { background: var(--navy2); }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+    .feature-card {
+      padding: 28px 26px; border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(30,45,69,0.25);
+      transition: border-color 0.25s, transform 0.2s, box-shadow 0.25s;
+      position: relative; overflow: hidden;
+    }
+    .feature-card::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .feature-card:hover { border-color: rgba(201,168,76,0.38); transform: translateY(-3px); box-shadow: 0 16px 40px rgba(0,0,0,0.35); }
+    .feature-card:hover::after { opacity: 1; }
+    .feature-icon {
+      width: 44px; height: 44px; border-radius: 10px;
+      background: rgba(201,168,76,0.1); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; margin-bottom: 16px;
+    }
+    .feature-title { font-size: 1rem; font-weight: 700; margin-bottom: 8px; color: var(--white); }
+    .feature-desc { font-size: 0.85rem; color: var(--gray); line-height: 1.65; }
+    .feature-tag {
+      display: inline-block; margin-top: 12px;
+      padding: 2px 10px; border-radius: 100px;
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em;
+    }
+    .tag-ai { background: rgba(139,92,246,0.15); color: #a78bfa; border: 1px solid rgba(139,92,246,0.3); }
+    .tag-privacy { background: rgba(34,197,94,0.12); color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
+    .tag-core { background: rgba(201,168,76,0.12); color: var(--gold2); border: 1px solid var(--border); }
+
+    /* ── WORKFLOW ── */
+    #workflow { background: var(--navy); }
+    .workflow-container { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+    .workflow-steps { display: flex; flex-direction: column; gap: 0; }
+    .workflow-step {
+      display: flex; gap: 20px; align-items: flex-start;
+      padding: 24px 0; border-bottom: 1px solid var(--border);
+      transition: background 0.2s; border-radius: 8px; padding: 20px 16px;
+    }
+    .workflow-step:last-child { border-bottom: none; }
+    .workflow-step:hover { background: rgba(201,168,76,0.04); }
+    .step-num-badge {
+      width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.95rem; font-weight: 800; color: var(--navy);
+    }
+    .step-num-badge.s1 { background: var(--gold); }
+    .step-num-badge.s2 { background: #818cf8; }
+    .step-num-badge.s3 { background: #34d399; }
+    .step-num-badge.s4 { background: #fb923c; }
+    .step-content { flex: 1; }
+    .step-title { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+    .step-desc { font-size: 0.85rem; color: var(--gray); line-height: 1.6; }
+
+    /* Visual side */
+    .workflow-visual {
+      border: 1px solid var(--border); border-radius: 20px;
+      background: rgba(30,45,69,0.3);
+      padding: 40px 32px; position: relative; overflow: hidden;
+    }
+    .workflow-visual::before {
+      content: '';
+      position: absolute; top: -40px; right: -40px;
+      width: 200px; height: 200px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(201,168,76,0.1) 0%, transparent 70%);
+    }
+    .visual-title { font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; }
+    .file-types {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px;
+    }
+    .file-chip {
+      padding: 5px 12px; border-radius: 6px;
+      background: rgba(201,168,76,0.1); border: 1px solid var(--border);
+      font-size: 0.8rem; font-weight: 700; color: var(--gold); letter-spacing: 0.06em;
+    }
+    .infra-row { margin-top: 20px; }
+    .infra-label { font-size: 0.7rem; color: var(--gray); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+    .infra-items { display: flex; flex-wrap: wrap; gap: 8px; }
+    .infra-chip {
+      padding: 4px 12px; border-radius: 6px;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+      font-size: 0.78rem; color: var(--gray);
+    }
+    .platform-row { margin-top: 20px; }
+    .platform-items { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+    .platform-chip {
+      padding: 4px 14px; border-radius: 6px;
+      background: rgba(30,45,69,0.6); border: 1px solid var(--border);
+      font-size: 0.8rem; color: var(--white); font-weight: 600;
+    }
+
+    /* ── ALSO INCLUDED ── */
+    #also { background: var(--navy2); }
+    .also-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px;
+    }
+    .also-item {
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 18px 20px; border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(30,45,69,0.2);
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .also-item:hover { border-color: rgba(201,168,76,0.3); background: rgba(30,45,69,0.4); }
+    .also-bullet {
+      width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+      background: rgba(201,168,76,0.1); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .also-text { font-size: 0.875rem; color: var(--gray); line-height: 1.5; }
+    .also-text strong { color: var(--white); font-weight: 600; }
+
+    /* ── TESTIMONIAL ── */
+    #testimonial {
+      background: var(--navy);
+      text-align: center;
+      padding: 80px 5vw;
+    }
+    .quote-mark { font-size: 5rem; line-height: 0.5; color: var(--gold); opacity: 0.3; font-family: Georgia, serif; }
+    .quote-text {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: clamp(1.1rem, 2vw, 1.5rem);
+      font-style: italic; color: var(--white);
+      max-width: 720px; margin: 20px auto 24px;
+      line-height: 1.7;
+    }
+    .quote-author { color: var(--gold); font-size: 0.875rem; font-weight: 700; letter-spacing: 0.06em; }
+
+    /* ── PRIVACY BAND ── */
+    .privacy-band {
+      background: linear-gradient(135deg, var(--navy3), var(--navy2));
+      border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+      padding: 60px 5vw;
+    }
+    .privacy-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 28px;
+      max-width: 900px; margin: 0 auto; text-align: center;
+    }
+    .privacy-item {}
+    .privacy-icon { font-size: 2rem; margin-bottom: 10px; }
+    .privacy-title { font-size: 0.95rem; font-weight: 700; color: var(--gold); margin-bottom: 6px; }
+    .privacy-desc { font-size: 0.82rem; color: var(--gray); line-height: 1.6; }
+
+    /* ── CTA ── */
+    .cta-band {
+      background: var(--navy); text-align: center; padding: 96px 5vw;
+      border-top: 1px solid var(--border);
+    }
+    .cta-band h2 { font-size: clamp(1.8rem, 3vw, 2.6rem); font-weight: 800; margin-bottom: 14px; }
+    .cta-band p { color: var(--gray); margin-bottom: 36px; font-size: 1rem; max-width: 500px; margin-left: auto; margin-right: auto; }
+    .cta-note { font-size: 0.78rem; color: var(--gray); margin-top: 20px; font-style: italic; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--navy2); border-top: 1px solid var(--border);
+      padding: 32px 5vw;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+    }
+    footer p { font-size: 0.78rem; color: var(--gray); }
+    footer a { color: var(--gold); text-decoration: none; }
+
+    /* Vault divider */
+    .vault-divider {
+      text-align: center; padding: 24px 5vw;
+      border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+      background: linear-gradient(90deg, transparent, rgba(201,168,76,0.05), transparent);
+      font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold);
+    }
+
+    @media (max-width: 768px) {
+      .workflow-container { grid-template-columns: 1fr; gap: 40px; }
+      .stats-bar { flex-direction: column; }
+      .stat-item { border-right: none; border-bottom: 1px solid var(--border); }
+      .stat-item:last-child { border-bottom: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <div style="display:flex;align-items:center;gap:24px;">
+    <a class="nav-back" href="index.html">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M10 3L5 8L10 13" stroke="#8A95A8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Back to SiloMind
+    </a>
+  </div>
+  <a class="nav-brand" href="index.html">
+    <svg width="32" height="32" viewBox="0 0 36 36" fill="none">
+      <rect x="3" y="8" width="30" height="24" rx="3" fill="#1E2D45" stroke="#C9A84C" stroke-width="1.2"/>
+      <circle cx="18" cy="20" r="8" fill="#0B1120" stroke="#C9A84C" stroke-width="1.2"/>
+      <line x1="18" y1="12" x2="18" y2="14" stroke="#C9A84C" stroke-width="1.4" stroke-linecap="round"/>
+      <line x1="18" y1="26" x2="18" y2="28" stroke="#C9A84C" stroke-width="1.4" stroke-linecap="round"/>
+      <line x1="10" y1="20" x2="12" y2="20" stroke="#C9A84C" stroke-width="1.4" stroke-linecap="round"/>
+      <line x1="24" y1="20" x2="26" y2="20" stroke="#C9A84C" stroke-width="1.4" stroke-linecap="round"/>
+      <line x1="12.34" y1="14.34" x2="13.76" y2="15.76" stroke="#C9A84C" stroke-width="1.2" stroke-linecap="round"/>
+      <line x1="22.24" y1="24.24" x2="23.66" y2="25.66" stroke="#C9A84C" stroke-width="1.2" stroke-linecap="round"/>
+      <line x1="23.66" y1="14.34" x2="22.24" y2="15.76" stroke="#C9A84C" stroke-width="1.2" stroke-linecap="round"/>
+      <line x1="13.76" y1="24.24" x2="12.34" y2="25.66" stroke="#C9A84C" stroke-width="1.2" stroke-linecap="round"/>
+      <circle cx="18" cy="20" r="3" fill="#C9A84C" opacity="0.9"/>
+      <path d="M3 8 Q3 3 18 3 Q33 3 33 8Z" fill="#1E2D45" stroke="#C9A84C" stroke-width="1.2"/>
+      <line x1="18" y1="3" x2="18" y2="0.5" stroke="#C9A84C" stroke-width="1.2" stroke-linecap="round"/>
+      <circle cx="18" cy="0.5" r="1" fill="#C9A84C"/>
+    </svg>
+    <span class="nav-brand-name">Silo<em>Mind</em></span>
+  </a>
+  <a href="mailto:sales@silomind.ai" class="nav-cta">Request Demo</a>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+
+  <div class="hero-product-badge">
+    <span class="live-dot"></span>
+    Live Product · A SiloMind LLC Product
+  </div>
+
+  <h1><span class="lex">LEX</span><span class="ocr">OCR</span></h1>
+  <p class="hero-sub-title">Legal Discovery &nbsp;·&nbsp; Reimagined</p>
+
+  <p class="hero-tagline">
+    Stop drowning in documents.<br/><strong>Start finding answers.</strong>
+  </p>
+  <p class="hero-sub-tag">Built exclusively for legal teams — no IT degree required.</p>
+
+  <div class="stats-bar">
+    <div class="stat-item">
+      <div class="stat-num">10×</div>
+      <div class="stat-label">Faster Review</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">100%</div>
+      <div class="stat-label">Private & Secure</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">30+</div>
+      <div class="stat-label">Powerful Features</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">90%</div>
+      <div class="stat-label">Review Time Cut (TAR)</div>
+    </div>
+  </div>
+
+  <div class="hero-actions">
+    <a href="mailto:sales@silomind.ai" class="btn-primary">Get Started Today</a>
+    <a href="#features" class="btn-outline">See All Features</a>
+  </div>
+</section>
+
+<!-- ── VAULT DIVIDER ── -->
+<div class="vault-divider">⚙ AI-powered document review that works the way lawyers think ⚙</div>
+
+<!-- ── CORE FEATURES ── -->
+<section id="features">
+  <div class="section-eyebrow">Core Features</div>
+  <h2 class="section-title">Features Built for the Way You Actually Work.</h2>
+  <p class="section-sub">Eight mission-critical capabilities, each purpose-engineered for legal discovery — not adapted from generic AI tools.</p>
+
+  <div class="features-grid">
+
+    <div class="feature-card">
+      <div class="feature-icon">🔍</div>
+      <div class="feature-title">Instant Semantic Search</div>
+      <p class="feature-desc">Find documents by meaning, not just keywords. Surface buried evidence in seconds — even when witnesses use different language.</p>
+      <span class="feature-tag tag-ai">AI-Powered</span>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">⚖️</div>
+      <div class="feature-title">AI Privilege Detection</div>
+      <p class="feature-desc">Attorney-client privilege assessed on every document. HIGH / MEDIUM / LOW risk scores, auto-logged to your privilege log. Never miss a protected doc.</p>
+      <span class="feature-tag tag-ai">AI-Powered</span>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">🤖</div>
+      <div class="feature-title">Predictive Coding (TAR)</div>
+      <p class="feature-desc">Review a seed set and the AI codes the rest. Cut review time by up to 90% on large matters. Technology-Assisted Review, built-in.</p>
+      <span class="feature-tag tag-ai">Machine Learning</span>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">📦</div>
+      <div class="feature-title">One-Click Production</div>
+      <p class="feature-desc">Bates-stamped PDFs, privilege log, and load file packaged in one ZIP, ready to serve. From review to production in a single click.</p>
+      <span class="feature-tag tag-core">Production</span>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">📅</div>
+      <div class="feature-title">Auto Case Timeline</div>
+      <p class="feature-desc">Dated events extracted from every document and assembled into a chronology automatically. Build your case narrative without the manual grunt work.</p>
+      <span class="feature-tag tag-ai">AI-Powered</span>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">🖊️</div>
+      <div class="feature-title">Redaction Engine</div>
+      <p class="feature-desc">Black-box any text: PII, privilege, trade secrets. AI suggests redactions; you approve. Clean PDF output instantly — no manual marking.</p>
+      <span class="feature-tag tag-ai">AI-Assisted</span>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">📧</div>
+      <div class="feature-title">Email Thread Families</div>
+      <p class="feature-desc">Emails and attachments linked automatically. Produce the full family group together. No more missing attachments in your production set.</p>
+      <span class="feature-tag tag-core">E-Discovery</span>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">🔒</div>
+      <div class="feature-title">100% On-Premises</div>
+      <p class="feature-desc">Every document stays on your server. No cloud, no third-party access, zero external API calls — ever. Your clients' data never leaves your walls.</p>
+      <span class="feature-tag tag-privacy">Zero Cloud</span>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── WORKFLOW ── -->
+<section id="workflow">
+  <div class="section-eyebrow">Workflow</div>
+  <h2 class="section-title">From Upload to Production in 4 Steps.</h2>
+  <p class="section-sub">No complex setup. No training required. Upload your documents and LEXOCR handles everything else.</p>
+
+  <div class="workflow-container">
+    <div class="workflow-steps">
+
+      <div class="workflow-step">
+        <div class="step-num-badge s1">1</div>
+        <div class="step-content">
+          <div class="step-title">Upload PDFs, Emails, or Office Files</div>
+          <p class="step-desc">Drag-and-drop any format — PDF, DOCX, MSG, TIFF, EML, PNG, JPG. LEXOCR ingests everything your matter generates.</p>
+        </div>
+      </div>
+
+      <div class="workflow-step">
+        <div class="step-num-badge s2">2</div>
+        <div class="step-content">
+          <div class="step-title">AI Reads, Extracts & Analyses Instantly</div>
+          <p class="step-desc">Local AI runs OCR, semantic extraction, privilege scoring, entity detection, and email threading — all on your hardware, no data leaves.</p>
+        </div>
+      </div>
+
+      <div class="workflow-step">
+        <div class="step-num-badge s3">3</div>
+        <div class="step-content">
+          <div class="step-title">Review, Code & Redact with One Click</div>
+          <p class="step-desc">Bulk code hundreds of documents, approve AI-suggested redactions, tag exhibits, and annotate — all from a single review screen.</p>
+        </div>
+      </div>
+
+      <div class="workflow-step">
+        <div class="step-num-badge s4">4</div>
+        <div class="step-content">
+          <div class="step-title">Export a Complete, Court-Ready Production</div>
+          <p class="step-desc">One ZIP: Bates-stamped PDFs, privilege log, load file. Ready to serve opposing counsel or deliver to client.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Visual specs panel -->
+    <div class="workflow-visual">
+      <div class="visual-title">Supported File Formats</div>
+      <div class="file-types">
+        <span class="file-chip">PDF</span>
+        <span class="file-chip">DOCX</span>
+        <span class="file-chip">MSG</span>
+        <span class="file-chip">TIFF</span>
+        <span class="file-chip">EML</span>
+        <span class="file-chip">PNG</span>
+        <span class="file-chip">JPG</span>
+      </div>
+
+      <div class="infra-row">
+        <div class="infra-label">Infrastructure</div>
+        <div class="infra-items">
+          <span class="infra-chip">Redis</span>
+          <span class="infra-chip">ChromaDB</span>
+          <span class="infra-chip">SQLite</span>
+          <span class="infra-chip">Ollama (Local AI)</span>
+        </div>
+      </div>
+
+      <div class="platform-row">
+        <div class="infra-label">Runs On</div>
+        <div class="platform-items">
+          <span class="platform-chip">🍎 macOS</span>
+          <span class="platform-chip">🪟 Windows</span>
+          <span class="platform-chip">🐧 Linux</span>
+        </div>
+      </div>
+
+      <div style="margin-top: 28px; padding: 18px; border-radius: 10px; background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.2);">
+        <p style="font-size:0.8rem; color: #4ade80; font-weight:700; margin-bottom:4px;">🔒 Zero External API Calls — Ever</p>
+        <p style="font-size:0.78rem; color: #8A95A8; line-height:1.6;">Runs entirely on your firm's hardware. No subscription. No data risk. No compromise.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── ALSO INCLUDED ── -->
+<section id="also">
+  <div class="section-eyebrow">Also Included</div>
+  <h2 class="section-title">30+ Features. Zero Extras to Buy.</h2>
+  <p class="section-sub">Every feature ships with LEXOCR — no add-on modules, no per-feature billing.</p>
+
+  <div class="also-grid">
+
+    <div class="also-item">
+      <div class="also-bullet">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#C9A84C" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <p class="also-text"><strong>Near-duplicate detection & grouping</strong> — cluster similar documents to eliminate redundant review</p>
+    </div>
+
+    <div class="also-item">
+      <div class="also-bullet">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#C9A84C" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <p class="also-text"><strong>OCR quality heatmap</strong> — spot bad pages fast before they reach production</p>
+    </div>
+
+    <div class="also-item">
+      <div class="also-bullet">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#C9A84C" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <p class="also-text"><strong>Cross-document reference linking</strong> — surface connections between documents automatically</p>
+    </div>
+
+    <div class="also-item">
+      <div class="also-bullet">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#C9A84C" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <p class="also-text"><strong>Bulk code hundreds of docs in one click</strong> — apply responsiveness, privilege, and issue tags en masse</p>
+    </div>
+
+    <div class="also-item">
+      <div class="also-bullet">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#C9A84C" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <p class="also-text"><strong>Live review progress dashboard</strong> — real-time completion rates, reviewer stats, and QC metrics</p>
+    </div>
+
+    <div class="also-item">
+      <div class="also-bullet">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#C9A84C" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <p class="also-text"><strong>Annotations & reviewer notes</strong> — attach comments to any document, visible across the review team</p>
+    </div>
+
+    <div class="also-item">
+      <div class="also-bullet">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#C9A84C" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <p class="also-text"><strong>Auto language detection for foreign docs</strong> — identify and route non-English documents automatically</p>
+    </div>
+
+    <div class="also-item">
+      <div class="also-bullet">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#C9A84C" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <p class="also-text"><strong>Deposition exhibit tracking</strong> — tag, number, and manage trial and deposition exhibits in one place</p>
+    </div>
+
+    <div class="also-item">
+      <div class="also-bullet">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#C9A84C" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <p class="also-text"><strong>Topic clustering</strong> — group documents by subject using AI, not manual tagging</p>
+    </div>
+
+    <div class="also-item">
+      <div class="also-bullet">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6L5 9L10 3" stroke="#C9A84C" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <p class="also-text"><strong>QC review with full audit trail</strong> — every coding decision logged, timestamped, and defensible in court</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── TESTIMONIAL ── -->
+<section id="testimonial">
+  <div class="quote-mark">"</div>
+  <p class="quote-text">
+    What used to take my team three weeks now takes three days. The privilege detection alone is worth it.
+  </p>
+  <p class="quote-author">— Senior Associate, Am Law 100 Firm</p>
+</section>
+
+<!-- ── PRIVACY BAND ── -->
+<div class="privacy-band">
+  <div style="text-align:center; margin-bottom:40px;">
+    <div class="section-eyebrow" style="text-align:center;">Security & Privacy</div>
+    <h2 class="section-title" style="text-align:center;">Your Data Never Leaves Your Walls.</h2>
+  </div>
+  <div class="privacy-grid">
+    <div class="privacy-item">
+      <div class="privacy-icon">🏛️</div>
+      <div class="privacy-title">On-Premises Only</div>
+      <p class="privacy-desc">Runs entirely on your firm's hardware. No cloud infrastructure, no shared tenancy.</p>
+    </div>
+    <div class="privacy-item">
+      <div class="privacy-icon">🚫</div>
+      <div class="privacy-title">Zero External Calls</div>
+      <p class="privacy-desc">AI inference runs locally via Ollama. Not a single byte leaves your network.</p>
+    </div>
+    <div class="privacy-item">
+      <div class="privacy-icon">🔑</div>
+      <div class="privacy-title">No Subscription Risk</div>
+      <p class="privacy-desc">One-time deployment. No vendor lock-in, no data held hostage at renewal.</p>
+    </div>
+    <div class="privacy-item">
+      <div class="privacy-icon">📋</div>
+      <div class="privacy-title">Full Audit Trail</div>
+      <p class="privacy-desc">Every action logged and timestamped. Defensible in any jurisdiction, any court.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ── CTA ── -->
+<div class="cta-band">
+  <div class="section-eyebrow" style="text-align:center;">Get Started</div>
+  <h2>Ready to Transform Your Review Process?</h2>
+  <p>Contact your litigation support administrator or reach out to the SiloMind sales team for a private demo on your hardware.</p>
+  <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+    <a href="mailto:sales@silomind.ai" class="btn-primary">Contact Sales Team</a>
+    <a href="index.html#products" class="btn-outline">View All Products</a>
+  </div>
+  <p class="cta-note">Runs on your firm's hardware. No subscription. No data risk. No compromise.</p>
+</div>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <p>LEXOCR &nbsp;·&nbsp; A <a href="index.html">SiloMind LLC</a> Product &nbsp;·&nbsp; © 2026 SiloMind LLC. All rights reserved.</p>
+  <p style="font-style:italic; color: #C9A84C; font-size:0.75rem;">Confidential</p>
+</footer>
+
+</body>
+</html>
